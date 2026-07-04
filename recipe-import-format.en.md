@@ -1,28 +1,33 @@
 # Recipe Scaler: import format for LLM agents
 
-This document describes the current `v1.2` import format already supported by the app.
+This document describes the current `v1.5` import format already supported by the app.
 If an agent generates a file that follows this spec, the user can import it via `Personal Area -> Data management -> Import recipes`.
 
 ## What is supported
 
 - One or more recipes.
+- Optional folders (collections) and recipe-to-folder links.
 - `JSON` when recipes do not include images.
 - `ZIP` when images must be imported.
 - HTML recipe steps in `description`.
 - Scalable ingredient references inside steps.
 - Timers inside steps.
 - Optional nutrition data.
+- Optional ingredient catalog icons via `illustrationId`.
 
 ## Quick rules
 
-- Use `v1.2` only.
-- Set `metadata.version` to `"1.2"`.
-- Set `metadata.type` to `"recipes-v1.2"`.
+- Use `v1.5` only.
+- Set `metadata.version` to `"1.5"`.
+- Set `metadata.type` to `"recipes-v1.5"`.
 - If there are no images, a single `.json` file is enough.
 - If there are images, build a `.zip` with `recipes.json` at the archive root.
 - Put HTML in `description`, not Markdown.
+- Store the number of servings in `servings` only when it is explicit source data. Do NOT add a "Servings"/"Порции"/"Yield" row to the `ingredients` array.
 - Use `<span class="ingredient-reference" ...>` for ingredient references in steps.
 - Use `<span class="timer-reference" ...>` for timers in steps.
+- To place recipes into folders, define `folders` and reference folder ids in `recipe.folderIds`.
+- Set `illustrationId` only with slugs from the ingredient catalog; omit the field if unsure.
 
 ## File structure
 
@@ -33,9 +38,9 @@ A single file, for example `recipes.json`:
 ```json
 {
   "metadata": {
-    "version": "1.2",
+    "version": "1.5",
     "exportDate": "2026-04-02T12:00:00.000Z",
-    "type": "recipes-v1.2",
+    "type": "recipes-v1.5",
     "count": 1
   },
   "recipes": []
@@ -62,16 +67,59 @@ recipes-import.zip
 ```ts
 {
   metadata: {
-    version: "1.2";
+    version: "1.5";
     exportDate: string;   // ISO 8601
-    type: "recipes-v1.2";
+    type: "recipes-v1.5";
     count: number;        // number of recipes
   };
   recipes: RecipeImport[];
+  folders?: FolderImport[];
   imageFiles?: Record<string, {
     full: string;
     preview: string;
   }>;
+}
+```
+
+## Folders
+
+Optional. Use when recipes should land in named collections after import.
+
+```ts
+type FolderImport = {
+  id: string;
+  name: string;
+  color?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+```
+
+### Folder rules
+
+- `folders` is optional. Omit it when no collection grouping is needed.
+- Each folder needs a stable `id` and a human-readable `name`.
+- Link recipes with `recipe.folderIds: string[]` using those folder ids.
+- Unknown or missing folder ids in `folderIds` are skipped silently on import.
+- Folder ids from the file are remapped to new ids in the app; only the ids inside the same import file must stay consistent.
+
+### Example
+
+```json
+{
+  "folders": [
+    {
+      "id": "baking",
+      "name": "Baking"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "pancakes-001",
+      "name": "Thin pancakes",
+      "folderIds": ["baking"]
+    }
+  ]
 }
 ```
 
@@ -84,7 +132,8 @@ type RecipeImport = {
   description?: string;
   ingredients?: IngredientImport[];
   color?: string;
-  scaleFactor?: number | string;
+  servings?: number | null;
+  folderIds?: string[];
   createdAt?: string | null;
   updatedAt?: string | null;
   originalRecipeLink?: string | null;
@@ -94,8 +143,9 @@ type RecipeImport = {
     protein: number;
     fat: number;
     carbs: number;
+    calculatedAt: string;
+    nutritionOutdated: boolean;
     totalWeight?: number;
-    calculatedAt?: string;
   };
 };
 ```
@@ -128,6 +178,7 @@ type IngredientImport = {
   fat?: number;
   carbs?: number;
   weight?: number;
+  illustrationId?: string;
 };
 ```
 
@@ -144,6 +195,15 @@ type IngredientImport = {
   - `originalAmount: null`
   - `isSeparator: true`
   - `unit: ""`
+- Optional per-ingredient nutrition fields (`calories`, `protein`, `fat`, `carbs`, `weight`) are preserved on import.
+- `illustrationId` is optional. It must be a catalog slug such as `flour-wheat` or `butter`. Invalid or unknown slugs are ignored on import.
+
+### Ingredient icons (`illustrationId`)
+
+- Decorative only. The visible ingredient name stays in `name`.
+- Use ids from the compact catalog: [llm-catalog.json](https://github.com/mikeozornin/recipe-scaler/blob/master/shared/data/ingredient-catalog/llm-catalog.json).
+- Each catalog entry has `id`, `labelEn`, `labelRu`, and alias lists. Pick the closest `id`.
+- If no good match exists, omit `illustrationId`.
 
 ### Example ingredients array
 
@@ -162,14 +222,16 @@ type IngredientImport = {
     "name": "All-purpose flour",
     "originalAmount": 250,
     "unit": "g",
-    "order": 2
+    "order": 2,
+    "illustrationId": "flour-wheat"
   },
   {
     "id": "milk",
     "name": "Milk",
     "originalAmount": 180,
     "unit": "ml",
-    "order": 3
+    "order": 3,
+    "illustrationId": "milk-whole"
   }
 ]
 ```
@@ -334,15 +396,22 @@ If images are needed:
 ```json
 {
   "metadata": {
-    "version": "1.2",
+    "version": "1.5",
     "exportDate": "2026-04-02T12:00:00.000Z",
-    "type": "recipes-v1.2",
+    "type": "recipes-v1.5",
     "count": 1
   },
+  "folders": [
+    {
+      "id": "breakfast",
+      "name": "Breakfast"
+    }
+  ],
   "recipes": [
     {
       "id": "pancakes-001",
       "name": "Thin pancakes",
+      "folderIds": ["breakfast"],
       "description": "<p>Mix <span class=\"ingredient-reference\" data-ingredient-id=\"milk\" data-original-amount=\"500\">500</span> ml of milk, <span class=\"ingredient-reference\" data-ingredient-id=\"eggs\" data-original-amount=\"2\">2</span> eggs, and <span class=\"ingredient-reference\" data-ingredient-id=\"flour\" data-original-amount=\"200\">200</span> g of flour.</p><p>Let the batter rest for <span class=\"timer-reference\" data-timer-id=\"rest-1\" data-duration=\"1800\" data-type=\"minutes\" data-name=\"Batter rest\" data-value=\"30\">30 minutes</span>.</p><p>Cook each pancake for <span class=\"timer-reference\" data-timer-id=\"fry-1\" data-duration=\"60\" data-type=\"seconds\" data-name=\"Cook pancake\" data-value=\"1\">1 minute</span> per side.</p>",
       "ingredients": [
         {
@@ -358,25 +427,28 @@ If images are needed:
           "name": "Milk",
           "originalAmount": 500,
           "unit": "ml",
-          "order": 2
+          "order": 2,
+          "illustrationId": "milk-whole"
         },
         {
           "id": "eggs",
           "name": "Eggs",
           "originalAmount": 2,
           "unit": "pcs",
-          "order": 3
+          "order": 3,
+          "illustrationId": "egg-whole"
         },
         {
           "id": "flour",
           "name": "All-purpose flour",
           "originalAmount": 200,
           "unit": "g",
-          "order": 4
+          "order": 4,
+          "illustrationId": "flour-wheat"
         }
       ],
+      "servings": 4,
       "color": "oklch(0.65 0.25 270)",
-      "scaleFactor": 1,
       "originalRecipeLink": "https://example.com/pancakes"
     }
   ]
@@ -388,9 +460,9 @@ If images are needed:
 ```json
 {
   "metadata": {
-    "version": "1.2",
+    "version": "1.5",
     "exportDate": "2026-04-02T12:00:00.000Z",
-    "type": "recipes-v1.2",
+    "type": "recipes-v1.5",
     "count": 1
   },
   "recipes": [
@@ -415,9 +487,9 @@ If images are needed:
 ## Common mistakes
 
 - Wrong version:
-  - not `"1.2"`
+  - not `"1.5"`
 - Wrong type:
-  - not `"recipes-v1.2"`
+  - not `"recipes-v1.5"`
 - `count` does not match the number of recipes.
 - `description` contains Markdown or plain text instead of HTML.
 - An `ingredient-reference` span has no `data-ingredient-id`.
@@ -427,12 +499,15 @@ If images are needed:
 - A path in `imageFiles` does not match the actual ZIP path.
 - `preview.webp` is missing from the archive.
 - Section headers do not use `originalAmount: null` and `isSeparator: true`.
+- `folderIds` references ids that are not defined in `folders`.
+- `illustrationId` uses a made-up slug instead of a catalog `id`.
 
 ## Practical guidance for LLM agents
 
-- Generate short stable ids such as `recipe-1`, `flour`, `bake-1`.
+- Generate short stable ids such as `recipe-1`, `flour`, `bake-1`, `folder-baking`.
 - Do not add random HTML attributes.
 - Do not embed images through `<img>` inside `description`.
 - If unsure, generate JSON without images.
 - If a number in the text should scale, wrap only the number, not the whole sentence.
 - If a timer is written as a range like `15-20 minutes`, keep the visible original text and use the upper value in `data-duration`.
+- Skip `folders`, `folderIds`, and `illustrationId` unless the user explicitly needs collections or ingredient icons.

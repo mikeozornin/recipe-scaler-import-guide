@@ -1,0 +1,202 @@
+{
+  "metadata": {
+    "version": "1.5",
+    "exportDate": "2026-04-11T00:00:00.000Z",
+    "type": "recipes-v1.5",
+    "count": 1
+  },
+  "folders": [
+    {
+      "id": "easter-baking",
+      "name": "Пасхальная выпечка"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "kulich-3x300",
+      "name": "Кулич на 3 штуки по 300 г",
+      "servings": 3,
+      "folderIds": ["easter-baking"],
+      "description": "<ol><li>Смешайте <span class=\"ingredient-reference\" data-ingredient-id=\"eggs\" data-original-amount=\"195\">195</span> г яиц, <span class=\"ingredient-reference\" data-ingredient-id=\"milk\" data-original-amount=\"40\">40</span> г молока и <span class=\"ingredient-reference\" data-ingredient-id=\"flour\" data-original-amount=\"388\">388</span> г муки. Замешивайте на второй скорости <span class=\"timer-reference\" data-timer-id=\"mix-1\" data-duration=\"300\" data-type=\"minutes\" data-name=\"Первый замес\" data-value=\"5\">5 минут</span>, чтобы тесто собралось. Если глютеновое окно еще не появляется, продолжайте замес; в исходнике на это ушло около 10 минут.</li><li>Добавьте <span class=\"ingredient-reference\" data-ingredient-id=\"sugar-dough\" data-original-amount=\"55\">55</span> г сахара и продолжайте замес до его растворения. Затем введите половину холодного сливочного масла кубиками: <span class=\"ingredient-reference\" data-ingredient-id=\"butter\" data-original-amount=\"50\" data-ratio=\"0.5\">50</span> г, и все <span class=\"ingredient-reference\" data-ingredient-id=\"fresh-yeast\" data-original-amount=\"22\">22</span> г свежих дрожжей. Когда первая половина масла соединится с тестом, добавьте <span class=\"ingredient-reference\" data-ingredient-id=\"salt\" data-original-amount=\"9\">9</span> г соли и ванильный сахар, вымешивайте <span class=\"timer-reference\" data-timer-id=\"mix-2\" data-duration=\"60\" data-type=\"minutes\" data-name=\"Замес после соли\" data-value=\"1\">1 минуту</span>, затем добавьте вторую половину масла: <span class=\"ingredient-reference\" data-ingredient-id=\"butter\" data-original-amount=\"50\" data-ratio=\"0.5\">50</span> г, и вымешивайте до объединения.</li><li>Соберите тесто в шар, слегка расплющите, накройте пленкой и уберите в холодильник отдохнуть на <span class=\"timer-reference\" data-timer-id=\"rest-1\" data-duration=\"1200\" data-type=\"minutes\" data-name=\"Охлаждение теста\" data-value=\"20\">20 минут</span>. Температура теста должна быть 23, максимум 24 градуса; в исходнике при 27 градусах тесто охлаждали до 21-22.</li><li>Подготовьте топпинги: цукаты, <span class=\"ingredient-reference\" data-ingredient-id=\"hazelnut\" data-original-amount=\"55\">55</span> г фундука, <span class=\"ingredient-reference\" data-ingredient-id=\"milk-chocolate\" data-original-amount=\"40\">40</span> г молочного шоколада, <span class=\"ingredient-reference\" data-ingredient-id=\"orange-chocolate\" data-original-amount=\"30\">30</span> г апельсинового шоколада и <span class=\"ingredient-reference\" data-ingredient-id=\"frozen-cherry\" data-original-amount=\"60\">60</span> г замороженной вишни. Вишню откиньте на сито и хорошо обсушите.</li><li>Достаньте тесто из холодильника, растяните его по всей плоскости, не рвите. Распределите шоколад, цукаты, фундук и вишню, добавьте мускатный орех: 1-2 щепотки, и немного молотой гвоздики. Соберите тесто, слегка округлите, переложите в миску, накройте пленкой с парой отверстий и оставьте при 23-24 градусах на <span class=\"timer-reference\" data-timer-id=\"proof-1\" data-duration=\"3000\" data-type=\"minutes\" data-name=\"Брожение перед формовкой\" data-value=\"50\">40-50 минут</span>, чтобы тесто отдохнуло и немного поднялось.</li><li>Разделите тесто на 3 части примерно по 300-320 г, округлите и разложите по формам, сразу поставив их на противень. Накройте пленкой и поставьте на расстойку в духовку, разогретую до 50 градусов и выключенную, на <span class=\"timer-reference\" data-timer-id=\"proof-2\" data-duration=\"7200\" data-type=\"hours\" data-name=\"Расстойка куличей\" data-value=\"2\">2 часа</span>. Тесто должно подняться, не доходя пару сантиметров до верха формы.</li><li>Разогрейте духовку до 185 градусов, снизьте до 180 и выпекайте <span class=\"timer-reference\" data-timer-id=\"bake-1\" data-duration=\"900\" data-type=\"minutes\" data-name=\"Первый этап выпечки\" data-value=\"15\">15 минут</span>. Затем снизьте температуру до 170 и пеките <span class=\"timer-reference\" data-timer-id=\"bake-2\" data-duration=\"600\" data-type=\"minutes\" data-name=\"Второй этап выпечки\" data-value=\"10\">10 минут</span>, после этого снизьте до 160 и допекайте еще <span class=\"timer-reference\" data-timer-id=\"bake-3\" data-duration=\"900\" data-type=\"minutes\" data-name=\"Третий этап выпечки\" data-value=\"15\">15 минут</span>. Ориентир готовности: 90-95 градусов внутри.</li><li>Для крема сложите в чашу <span class=\"ingredient-reference\" data-ingredient-id=\"cremette\" data-original-amount=\"200\">200</span> г сыра Креметте, <span class=\"ingredient-reference\" data-ingredient-id=\"whipping-cream\" data-original-amount=\"400\">400</span> г сливок 33%, <span class=\"ingredient-reference\" data-ingredient-id=\"powdered-sugar\" data-original-amount=\"40\">40</span> г сахарной пудры, сахар и ванильный сахар. Сначала перемешайте на минимальной скорости <span class=\"timer-reference\" data-timer-id=\"cream-1\" data-duration=\"120\" data-type=\"minutes\" data-name=\"Первый замес крема\" data-value=\"2\">1,5-2 минуты</span>, затем взбивайте на большей скорости <span class=\"timer-reference\" data-timer-id=\"cream-2\" data-duration=\"300\" data-type=\"minutes\" data-name=\"Взбивание крема\" data-value=\"5\">4-5 минут</span>.</li><li>Натрите цедру апельсина, лайма и лимона, не задевая белую часть. Добавьте цедру в крем, взбейте еще <span class=\"timer-reference\" data-timer-id=\"cream-3\" data-duration=\"10\" data-type=\"seconds\" data-name=\"Финальное взбивание крема\" data-value=\"10\">10 секунд</span>, переложите крем в миску и уберите в холодильник на <span class=\"timer-reference\" data-timer-id=\"cream-4\" data-duration=\"1800\" data-type=\"minutes\" data-name=\"Охлаждение крема\" data-value=\"30\">30 минут</span>.</li><li>Полностью остудите куличи. Крем наносите только перед подачей: на горячий кулич его наносить нельзя, и заранее украшать им тоже не стоит.</li></ol>",
+      "ingredients": [
+        {
+          "id": "dough",
+          "name": "Тесто",
+          "originalAmount": null,
+          "unit": "",
+          "order": 1,
+          "isSeparator": true
+        },
+        {
+          "id": "flour",
+          "name": "Мука",
+          "originalAmount": 388,
+          "unit": "г",
+          "order": 2,
+          "illustrationId": "flour-wheat"
+        },
+        {
+          "id": "eggs",
+          "name": "Яйца",
+          "originalAmount": 195,
+          "unit": "г",
+          "order": 3,
+          "illustrationId": "egg-whole"
+        },
+        {
+          "id": "milk",
+          "name": "Молоко",
+          "originalAmount": 40,
+          "unit": "г",
+          "order": 4,
+          "illustrationId": "milk-whole"
+        },
+        {
+          "id": "sugar-dough",
+          "name": "Сахар",
+          "originalAmount": 55,
+          "unit": "г",
+          "order": 5,
+          "illustrationId": "sugar-white"
+        },
+        {
+          "id": "salt",
+          "name": "Соль",
+          "originalAmount": 9,
+          "unit": "г",
+          "order": 6,
+          "illustrationId": "salt"
+        },
+        {
+          "id": "butter",
+          "name": "Сливочное масло",
+          "originalAmount": 100,
+          "unit": "г",
+          "order": 7,
+          "illustrationId": "butter"
+        },
+        {
+          "id": "fresh-yeast",
+          "name": "Дрожжи свежие",
+          "originalAmount": 22,
+          "unit": "г",
+          "order": 8,
+          "illustrationId": "powder-sachet"
+        },
+        {
+          "id": "toppings",
+          "name": "Топинги",
+          "originalAmount": null,
+          "unit": "",
+          "order": 9,
+          "isSeparator": true
+        },
+        {
+          "id": "candied-fruit",
+          "name": "Цукаты",
+          "originalAmount": null,
+          "unit": "",
+          "order": 10
+        },
+        {
+          "id": "hazelnut",
+          "name": "Фундук",
+          "originalAmount": 55,
+          "unit": "г",
+          "order": 11,
+          "illustrationId": "hazelnut"
+        },
+        {
+          "id": "milk-chocolate",
+          "name": "Молочный шоколад",
+          "originalAmount": 40,
+          "unit": "г",
+          "order": 12,
+          "illustrationId": "chocolate-dark"
+        },
+        {
+          "id": "orange-chocolate",
+          "name": "Апельсиновый шоколад",
+          "originalAmount": 30,
+          "unit": "г",
+          "order": 13
+        },
+        {
+          "id": "frozen-cherry",
+          "name": "Вишня с/м",
+          "originalAmount": 60,
+          "unit": "г",
+          "order": 14,
+          "illustrationId": "cherry"
+        },
+        {
+          "id": "nutmeg",
+          "name": "Мускатный орех",
+          "originalAmount": null,
+          "unit": "",
+          "order": 15
+        },
+        {
+          "id": "ground-cloves",
+          "name": "Молотая гвоздика",
+          "originalAmount": null,
+          "unit": "",
+          "order": 16
+        },
+        {
+          "id": "cream-section",
+          "name": "Крем",
+          "originalAmount": null,
+          "unit": "",
+          "order": 17,
+          "isSeparator": true
+        },
+        {
+          "id": "whipping-cream",
+          "name": "Сливки 33%",
+          "originalAmount": 400,
+          "unit": "г",
+          "order": 18,
+          "illustrationId": "cream-35"
+        },
+        {
+          "id": "powdered-sugar",
+          "name": "Сахарная пудра",
+          "originalAmount": 40,
+          "unit": "г",
+          "order": 19,
+          "illustrationId": "sugar-white"
+        },
+        {
+          "id": "cremette",
+          "name": "Сыр Креметте",
+          "originalAmount": 200,
+          "unit": "г",
+          "order": 20,
+          "illustrationId": "cream-cheese"
+        },
+        {
+          "id": "citrus-zest",
+          "name": "Цедра апельсина, лайма и лимона",
+          "originalAmount": null,
+          "unit": "",
+          "order": 21
+        },
+        {
+          "id": "sugar-cream",
+          "name": "Сахар",
+          "originalAmount": null,
+          "unit": "",
+          "order": 22
+        },
+        {
+          "id": "vanilla-sugar",
+          "name": "Ванильный сахар",
+          "originalAmount": null,
+          "unit": "",
+          "order": 23
+        }
+      ]
+    }
+  ]
+}

@@ -1,28 +1,33 @@
 # Recipe Scaler: формат импорта для LLM-агента
 
-Этот документ описывает актуальный формат импорта `v1.2`, который уже поддерживается приложением.
+Этот документ описывает актуальный формат импорта `v1.5`, который уже поддерживается приложением.
 Если агент сгенерирует файл по этой спецификации, пользователь сможет импортировать его через `Личный кабинет -> Управление данными -> Импортировать рецепты`.
 
 ## Что поддерживается
 
 - Один или несколько рецептов.
+- Опциональные папки (коллекции) и привязка рецептов к папкам.
 - `JSON`, если в рецептах нет изображений.
 - `ZIP`, если нужно импортировать изображения.
 - HTML-разметка шагов в поле `description`.
 - Масштабируемые ссылки на ингредиенты внутри шагов.
 - Таймеры внутри шагов.
 - Опциональная nutrition-информация.
+- Опциональные иконки ингредиентов через `illustrationId`.
 
 ## Быстрые правила
 
-- Используйте только формат `v1.2`.
-- В `metadata.version` ставьте `"1.2"`.
-- В `metadata.type` ставьте `"recipes-v1.2"`.
+- Используйте только формат `v1.5`.
+- В `metadata.version` ставьте `"1.5"`.
+- В `metadata.type` ставьте `"recipes-v1.5"`.
 - Если изображений нет, достаточно одного `.json` файла.
 - Если изображения есть, делайте `.zip` с файлом `recipes.json` в корне архива.
 - В `description` кладите HTML, не Markdown.
+- Записывайте число порций в `servings` только если это явное исходное значение. Не добавляйте «Порции» отдельной строкой в массив `ingredients`.
 - Для ингредиентов в шагах используйте `<span class="ingredient-reference" ...>`.
 - Для таймеров в шагах используйте `<span class="timer-reference" ...>`.
+- Чтобы положить рецепты в папки, опишите `folders` и укажите id папок в `recipe.folderIds`.
+- Ставьте `illustrationId` только со slug из каталога ингредиентов; если не уверены — не добавляйте поле.
 
 ## Структура файла
 
@@ -33,9 +38,9 @@
 ```json
 {
   "metadata": {
-    "version": "1.2",
+    "version": "1.5",
     "exportDate": "2026-04-02T12:00:00.000Z",
-    "type": "recipes-v1.2",
+    "type": "recipes-v1.5",
     "count": 1
   },
   "recipes": []
@@ -62,16 +67,59 @@ recipes-import.zip
 ```ts
 {
   metadata: {
-    version: "1.2";
+    version: "1.5";
     exportDate: string;   // ISO 8601
-    type: "recipes-v1.2";
+    type: "recipes-v1.5";
     count: number;        // количество рецептов
   };
   recipes: RecipeImport[];
+  folders?: FolderImport[];
   imageFiles?: Record<string, {
     full: string;
     preview: string;
   }>;
+}
+```
+
+## Папки
+
+Опционально. Используйте, когда рецепты должны попасть в именованные коллекции после импорта.
+
+```ts
+type FolderImport = {
+  id: string;
+  name: string;
+  color?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+```
+
+### Правила по папкам
+
+- `folders` опционален. Не добавляйте его, если группировка не нужна.
+- У каждой папки должен быть стабильный `id` и человекочитаемый `name`.
+- Связывайте рецепты через `recipe.folderIds: string[]`, используя эти id.
+- Неизвестные или отсутствующие id в `folderIds` при импорте пропускаются.
+- Id папок из файла переназначаются на новые id в приложении; важно только, чтобы id внутри одного файла были согласованы.
+
+### Пример
+
+```json
+{
+  "folders": [
+    {
+      "id": "baking",
+      "name": "Выпечка"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "pancakes-001",
+      "name": "Тонкие блины",
+      "folderIds": ["baking"]
+    }
+  ]
 }
 ```
 
@@ -84,7 +132,8 @@ type RecipeImport = {
   description?: string;
   ingredients?: IngredientImport[];
   color?: string;
-  scaleFactor?: number | string;
+  servings?: number | null;
+  folderIds?: string[];
   createdAt?: string | null;
   updatedAt?: string | null;
   originalRecipeLink?: string | null;
@@ -94,8 +143,9 @@ type RecipeImport = {
     protein: number;
     fat: number;
     carbs: number;
+    calculatedAt: string;
+    nutritionOutdated: boolean;
     totalWeight?: number;
-    calculatedAt?: string;
   };
 };
 ```
@@ -128,6 +178,7 @@ type IngredientImport = {
   fat?: number;
   carbs?: number;
   weight?: number;
+  illustrationId?: string;
 };
 ```
 
@@ -144,6 +195,15 @@ type IngredientImport = {
   - `originalAmount: null`
   - `isSeparator: true`
   - `unit: ""`
+- Опциональные поля nutrition на ингредиент (`calories`, `protein`, `fat`, `carbs`, `weight`) сохраняются при импорте.
+- `illustrationId` опционален. Это slug из каталога, например `flour-wheat` или `butter`. Неизвестные slug при импорте игнорируются.
+
+### Иконки ингредиентов (`illustrationId`)
+
+- Только декоративные. Видимое название остаётся в `name`.
+- Используйте id из компактного каталога: [llm-catalog.json](https://github.com/mikeozornin/recipe-scaler/blob/master/shared/data/ingredient-catalog/llm-catalog.json).
+- У каждой записи каталога есть `id`, `labelEn`, `labelRu` и списки алиасов. Выбирайте ближайший `id`.
+- Если хорошего совпадения нет — не добавляйте `illustrationId`.
 
 ### Пример массива ингредиентов
 
@@ -162,14 +222,16 @@ type IngredientImport = {
     "name": "Пшеничная мука",
     "originalAmount": 250,
     "unit": "г",
-    "order": 2
+    "order": 2,
+    "illustrationId": "flour-wheat"
   },
   {
     "id": "milk",
     "name": "Молоко",
     "originalAmount": 180,
     "unit": "мл",
-    "order": 3
+    "order": 3,
+    "illustrationId": "milk-whole"
   }
 ]
 ```
@@ -334,15 +396,22 @@ type IngredientImport = {
 ```json
 {
   "metadata": {
-    "version": "1.2",
+    "version": "1.5",
     "exportDate": "2026-04-02T12:00:00.000Z",
-    "type": "recipes-v1.2",
+    "type": "recipes-v1.5",
     "count": 1
   },
+  "folders": [
+    {
+      "id": "breakfast",
+      "name": "Завтраки"
+    }
+  ],
   "recipes": [
     {
       "id": "pancakes-001",
       "name": "Тонкие блины",
+      "folderIds": ["breakfast"],
       "description": "<p>Смешайте <span class=\"ingredient-reference\" data-ingredient-id=\"milk\" data-original-amount=\"500\">500</span> мл молока, <span class=\"ingredient-reference\" data-ingredient-id=\"eggs\" data-original-amount=\"2\">2</span> яйца и <span class=\"ingredient-reference\" data-ingredient-id=\"flour\" data-original-amount=\"200\">200</span> г муки.</p><p>Оставьте тесто на <span class=\"timer-reference\" data-timer-id=\"rest-1\" data-duration=\"1800\" data-type=\"minutes\" data-name=\"Отдых теста\" data-value=\"30\">30 минут</span>.</p><p>Жарьте каждый блин по <span class=\"timer-reference\" data-timer-id=\"fry-1\" data-duration=\"60\" data-type=\"seconds\" data-name=\"Жарить блин\" data-value=\"1\">1 минуте</span> с каждой стороны.</p>",
       "ingredients": [
         {
@@ -358,25 +427,28 @@ type IngredientImport = {
           "name": "Молоко",
           "originalAmount": 500,
           "unit": "мл",
-          "order": 2
+          "order": 2,
+          "illustrationId": "milk-whole"
         },
         {
           "id": "eggs",
           "name": "Яйца",
           "originalAmount": 2,
           "unit": "шт",
-          "order": 3
+          "order": 3,
+          "illustrationId": "egg-whole"
         },
         {
           "id": "flour",
           "name": "Пшеничная мука",
           "originalAmount": 200,
           "unit": "г",
-          "order": 4
+          "order": 4,
+          "illustrationId": "flour-wheat"
         }
       ],
+      "servings": 4,
       "color": "oklch(0.65 0.25 270)",
-      "scaleFactor": 1,
       "originalRecipeLink": "https://example.com/pancakes"
     }
   ]
@@ -388,9 +460,9 @@ type IngredientImport = {
 ```json
 {
   "metadata": {
-    "version": "1.2",
+    "version": "1.5",
     "exportDate": "2026-04-02T12:00:00.000Z",
-    "type": "recipes-v1.2",
+    "type": "recipes-v1.5",
     "count": 1
   },
   "recipes": [
@@ -415,9 +487,9 @@ type IngredientImport = {
 ## Типовые ошибки
 
 - Неверная версия:
-  - не `"1.2"`
+  - не `"1.5"`
 - Неверный тип:
-  - не `"recipes-v1.2"`
+  - не `"recipes-v1.5"`
 - `count` не совпадает с количеством рецептов.
 - В `description` лежит Markdown или plain text вместо HTML.
 - У `ingredient-reference` нет `data-ingredient-id`.
@@ -427,12 +499,15 @@ type IngredientImport = {
 - В `imageFiles` путь не совпадает с реальным путём файла в архиве.
 - В архиве нет `preview.webp`.
 - Для секции ингредиентов не выставлены `originalAmount: null` и `isSeparator: true`.
+- `folderIds` ссылается на id, которых нет в `folders`.
+- `illustrationId` содержит выдуманный slug вместо `id` из каталога.
 
 ## Практические рекомендации для LLM-агента
 
-- Генерируйте короткие, стабильные `id`, например `recipe-1`, `flour`, `bake-1`.
+- Генерируйте короткие, стабильные `id`, например `recipe-1`, `flour`, `bake-1`, `folder-baking`.
 - Не используйте случайные HTML-атрибуты.
 - Не вставляйте изображения через `<img>` в `description`.
 - Если сомневаетесь, делайте JSON без изображений.
 - Если в тексте есть число, которое должно масштабироваться, заворачивайте только число, а не всю фразу.
 - Если таймер встречается как диапазон `15-20 минут`, сохраняйте внутри тега видимый исходный текст, а в `data-duration` ставьте верхнее значение в секундах.
+- Не добавляйте `folders`, `folderIds` и `illustrationId`, если пользователю не нужны коллекции или иконки ингредиентов.
